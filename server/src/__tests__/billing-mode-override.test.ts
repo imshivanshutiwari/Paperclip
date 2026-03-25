@@ -37,3 +37,32 @@ describe("applyBillingModeOverride", () => {
     expect(applyBillingModeOverride("subscription", "credits")).toBe("subscription");
   });
 });
+
+describe("pi/opencode billing mode pattern (unknown-default adapters)", () => {
+  // Mirrors the inline pattern used in pi-local and opencode-local where
+  // the default billing type is "unknown" (no auto-detection available).
+  function resolveUnknownDefault(billingMode: string): string {
+    const mode = billingMode.trim().toLowerCase();
+    return mode === "auto" || mode === "" ? "unknown" : applyBillingModeOverride("api", mode);
+  }
+
+  it("returns 'unknown' when billingMode is 'auto' (default)", () => {
+    expect(resolveUnknownDefault("auto")).toBe("unknown");
+  });
+
+  it("returns 'unknown' when billingMode is empty", () => {
+    expect(resolveUnknownDefault("")).toBe("unknown");
+  });
+
+  it("returns 'subscription' when billingMode is 'subscription'", () => {
+    expect(resolveUnknownDefault("subscription")).toBe("subscription");
+  });
+
+  it("returns 'api' when billingMode is 'metered'", () => {
+    expect(resolveUnknownDefault("metered")).toBe("api");
+  });
+
+  it("returns 'api' when billingMode is 'api'", () => {
+    expect(resolveUnknownDefault("api")).toBe("api");
+  });
+});

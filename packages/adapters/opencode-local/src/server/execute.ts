@@ -372,7 +372,10 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       provider: parseModelProvider(modelId),
       biller: resolveOpenCodeBiller(runtimeEnv, parseModelProvider(modelId)),
       model: modelId,
-      billingType: applyBillingModeOverride("api", asString(config.billingMode, "auto")) === "subscription" ? "subscription" : "unknown",
+      billingType: (() => {
+        const mode = asString(config.billingMode, "auto").trim().toLowerCase();
+        return mode === "auto" || mode === "" ? "unknown" : applyBillingModeOverride("api", mode);
+      })(),
       costUsd: attempt.parsed.costUsd,
       resultJson: {
         stdout: attempt.proc.stdout,
