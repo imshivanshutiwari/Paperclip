@@ -106,8 +106,8 @@ export function InstanceSettings() {
         const detail = firstError instanceof Error ? firstError.message : "Unknown error";
         throw new Error(
           failures.length === 1
-            ? `Failed to disable 1 timer heartbeat: ${detail}`
-            : `Failed to disable ${failures.length} of ${enabled.length} timer heartbeats. First error: ${detail}`,
+            ? `Failed to disable 1 timer pulse: ${detail}`
+            : `Failed to disable ${failures.length} of ${enabled.length} timer pulses. First error: ${detail}`,
         );
       }
       return enabled;
@@ -126,7 +126,7 @@ export function InstanceSettings() {
       ]);
     },
     onError: (error) => {
-      setActionError(error instanceof Error ? error.message : "Failed to disable all heartbeats.");
+      setActionError(error instanceof Error ? error.message : "Failed to disable all pulses.");
     },
   });
 
@@ -150,7 +150,7 @@ export function InstanceSettings() {
   }, [agents]);
 
   if (heartbeatsQuery.isLoading) {
-    return <div className="text-sm text-muted-foreground">Loading scheduler heartbeats...</div>;
+    return <div className="text-sm text-muted-foreground">Loading scheduler pulses...</div>;
   }
 
   if (heartbeatsQuery.error) {
@@ -158,7 +158,7 @@ export function InstanceSettings() {
       <div className="text-sm text-destructive">
         {heartbeatsQuery.error instanceof Error
           ? heartbeatsQuery.error.message
-          : "Failed to load scheduler heartbeats."}
+          : "Failed to load scheduler pulses."}
       </div>
     );
   }
@@ -168,10 +168,10 @@ export function InstanceSettings() {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Settings className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-lg font-semibold">Scheduler Heartbeats</h1>
+          <h1 className="text-lg font-semibold">Scheduler Pulses</h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          Agents with a timer heartbeat enabled across all of your companies.
+          Agents with a timer pulse enabled across all of your companies.
         </p>
       </div>
 
@@ -187,7 +187,7 @@ export function InstanceSettings() {
             disabled={disableAllMutation.isPending}
             onClick={() => {
               const noun = enabledCount === 1 ? "agent" : "agents";
-              if (!window.confirm(`Disable timer heartbeats for all ${enabledCount} enabled ${noun}?`)) {
+              if (!window.confirm(`Disable timer pulses for all ${enabledCount} enabled ${noun}?`)) {
                 return;
               }
               disableAllMutation.mutate(agents);
@@ -207,7 +207,7 @@ export function InstanceSettings() {
       {agents.length === 0 ? (
         <EmptyState
           icon={Clock3}
-          message="No scheduler heartbeats match the current criteria."
+          message="No scheduler pulses match the current criteria."
         />
       ) : (
         <div className="space-y-4">
@@ -266,7 +266,7 @@ export function InstanceSettings() {
                             disabled={saving}
                             onClick={() => toggleMutation.mutate(agent)}
                           >
-                            {saving ? "..." : agent.heartbeatEnabled ? "Disable Timer Heartbeat" : "Enable Timer Heartbeat"}
+                            {saving ? "..." : agent.heartbeatEnabled ? "Disable Timer Pulse" : "Enable Timer Pulse"}
                           </Button>
                         </span>
                       </div>
