@@ -80,38 +80,71 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.637 0.237 25.331);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.145 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* ── NexusAI Dark Mode Max ──────────────────────────────────────────────────
+   * Deep near-black base with subtle cool undertone.
+   * Glassmorphism cards carry a transparent/frosted surface.
+   * Electric indigo accent system for interactive elements.
+   * ──────────────────────────────────────────────────────────────────────── */
+
+  /* Base surfaces */
+  --background:                oklch(0.09 0.012 264);   /* #0b0c14 deep void */
+  --foreground:                oklch(0.94 0.008 264);   /* near-white with cool cast */
+
+  /* Glassmorphism card surface: translucent dark glass */
+  --card:                      oklch(0.14 0.018 264);   /* frosted dark */
+  --card-foreground:           oklch(0.94 0.008 264);
+
+  --popover:                   oklch(0.14 0.018 264);
+  --popover-foreground:        oklch(0.94 0.008 264);
+
+  /* Electric indigo primary */
+  --primary:                   oklch(0.72 0.195 264);   /* #6e7fff electric indigo */
+  --primary-foreground:        oklch(0.08 0.01 264);
+
+  --secondary:                 oklch(0.18 0.02 264);
+  --secondary-foreground:      oklch(0.94 0.008 264);
+
+  --muted:                     oklch(0.18 0.016 264);
+  --muted-foreground:          oklch(0.60 0.02 264);
+
+  /* Subtle neon accent for hover states */
+  --accent:                    oklch(0.20 0.025 264);
+  --accent-foreground:         oklch(0.94 0.008 264);
+
+  --destructive:               oklch(0.62 0.25 25);
+  --destructive-foreground:    oklch(0.97 0 0);
+
+  /* Translucent glass borders */
+  --border:                    oklch(0.28 0.025 264 / 0.55);
+  --input:                     oklch(0.18 0.018 264);
+  --ring:                      oklch(0.72 0.195 264 / 0.50);
+
+  /* Telemetry / chart palette – high-contrast electric colours */
+  --chart-1:                   oklch(0.72 0.195 264);   /* indigo */
+  --chart-2:                   oklch(0.75 0.18  160);   /* teal */
+  --chart-3:                   oklch(0.80 0.17   90);   /* amber */
+  --chart-4:                   oklch(0.68 0.22  300);   /* violet */
+  --chart-5:                   oklch(0.65 0.23   20);   /* coral */
+
+  /* Sidebar – slightly deeper than background for visual hierarchy */
+  --sidebar:                   oklch(0.10 0.014 264);
+  --sidebar-foreground:        oklch(0.94 0.008 264);
+  --sidebar-primary:           oklch(0.72 0.195 264);
+  --sidebar-primary-foreground:oklch(0.08 0.01  264);
+  --sidebar-accent:            oklch(0.18 0.022 264);
+  --sidebar-accent-foreground: oklch(0.94 0.008 264);
+  --sidebar-border:            oklch(0.22 0.020 264 / 0.45);
+  --sidebar-ring:              oklch(0.72 0.195 264 / 0.45);
+
+  /* NexusAI extended design tokens */
+  --glass-bg:                  oklch(0.14 0.018 264 / 0.75);
+  --glass-border:              oklch(0.45 0.04  264 / 0.25);
+  --glass-highlight:           oklch(0.90 0.02  264 / 0.07);
+  --neon-primary:              oklch(0.72 0.195 264);
+  --neon-secondary:            oklch(0.75 0.18  160);
+  --neon-danger:               oklch(0.62 0.25   25);
+  --neon-glow-primary:         oklch(0.72 0.195 264 / 0.20);
+  --neon-glow-secondary:       oklch(0.75 0.18  160 / 0.20);
 }
 
 @layer base {
@@ -780,3 +813,153 @@ a.paperclip-project-mention-chip {
 [class*="_toolbarNodeKindSelectContainer_"] {
   z-index: 81 !important;
 }
+
+/* ── NexusAI Glassmorphism Design System ────────────────────────────────────
+ * Dark Mode Max: frosted-glass surfaces, electric neon accents, depth layering.
+ * These classes compose with existing Tailwind utilities.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* Glass panel surface */
+.glass-panel {
+  background: var(--glass-bg, oklch(0.14 0.018 264 / 0.75));
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid var(--glass-border, oklch(0.45 0.04 264 / 0.25));
+  box-shadow:
+    0 0 0 1px var(--glass-highlight, oklch(0.90 0.02 264 / 0.07)) inset,
+    0 8px 32px oklch(0 0 0 / 0.35),
+    0 1px 0 oklch(1 0 0 / 0.05) inset;
+}
+
+/* Glass card – slightly more prominent than a panel */
+.glass-card {
+  background: var(--glass-bg, oklch(0.14 0.018 264 / 0.75));
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid var(--glass-border, oklch(0.45 0.04 264 / 0.25));
+  box-shadow:
+    0 0 0 1px var(--glass-highlight, oklch(0.90 0.02 264 / 0.06)) inset,
+    0 16px 48px oklch(0 0 0 / 0.40),
+    0 2px 8px oklch(0 0 0 / 0.25);
+  border-radius: 0.5rem;
+}
+
+/* Neon glow border on focus/active elements */
+.neon-focus-ring {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--background),
+    0 0 0 4px var(--neon-primary, oklch(0.72 0.195 264)),
+    0 0 12px var(--neon-glow-primary, oklch(0.72 0.195 264 / 0.20));
+}
+
+/* Electric primary button treatment */
+.btn-neon-primary {
+  background: linear-gradient(
+    135deg,
+    oklch(0.72 0.195 264) 0%,
+    oklch(0.65 0.22 290) 100%
+  );
+  box-shadow:
+    0 0 0 1px oklch(0.72 0.195 264 / 0.40),
+    0 4px 16px oklch(0.72 0.195 264 / 0.25),
+    0 1px 0 oklch(1 0 0 / 0.15) inset;
+  color: oklch(0.98 0 0);
+  transition: box-shadow 150ms ease, transform 100ms ease;
+}
+.btn-neon-primary:hover {
+  box-shadow:
+    0 0 0 1px oklch(0.72 0.195 264 / 0.60),
+    0 6px 24px oklch(0.72 0.195 264 / 0.40),
+    0 1px 0 oklch(1 0 0 / 0.15) inset;
+  transform: translateY(-1px);
+}
+.btn-neon-primary:active {
+  transform: translateY(0);
+  box-shadow:
+    0 0 0 1px oklch(0.72 0.195 264 / 0.30),
+    0 2px 8px oklch(0.72 0.195 264 / 0.20),
+    0 1px 0 oklch(1 0 0 / 0.15) inset;
+}
+
+/* High-density telemetry chart gradient fills */
+.chart-fill-primary {
+  fill: oklch(0.72 0.195 264 / 0.70);
+  stroke: oklch(0.72 0.195 264);
+  stroke-width: 1.5;
+}
+.chart-fill-secondary {
+  fill: oklch(0.75 0.18 160 / 0.70);
+  stroke: oklch(0.75 0.18 160);
+  stroke-width: 1.5;
+}
+.chart-fill-warning {
+  fill: oklch(0.80 0.17 90 / 0.70);
+  stroke: oklch(0.80 0.17 90);
+  stroke-width: 1.5;
+}
+.chart-fill-danger {
+  fill: oklch(0.62 0.25 25 / 0.70);
+  stroke: oklch(0.62 0.25 25);
+  stroke-width: 1.5;
+}
+
+/* Pulse indicator – animated neon dot for live run states */
+@keyframes nexus-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 var(--neon-glow-primary, oklch(0.72 0.195 264 / 0.20));
+  }
+  50% {
+    opacity: 0.80;
+    box-shadow: 0 0 0 5px oklch(0.72 0.195 264 / 0);
+  }
+}
+
+.nexus-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-primary, oklch(0.72 0.195 264));
+  animation: nexus-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth state transitions for panels */
+.nexus-transition {
+  transition:
+    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+/* Frosted modal overlay */
+.nexus-modal-overlay {
+  background: oklch(0.05 0.01 264 / 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Deep background gradient for the main app shell */
+.dark body,
+.dark #root {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.20 0.04 264 / 0.30), transparent),
+    oklch(0.09 0.012 264);
+}
+
+/* Telemetry grid lines for chart backgrounds */
+.nexus-chart-grid {
+  background-image:
+    linear-gradient(oklch(0.28 0.025 264 / 0.20) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.28 0.025 264 / 0.20) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Status badge neon tones */
+.badge-running  { background: oklch(0.72 0.195 264 / 0.15); color: oklch(0.75 0.20 264); border-color: oklch(0.72 0.195 264 / 0.35); }
+.badge-success  { background: oklch(0.75 0.18 160 / 0.15); color: oklch(0.78 0.18 155); border-color: oklch(0.75 0.18 160 / 0.35); }
+.badge-failed   { background: oklch(0.62 0.25 25 / 0.15);  color: oklch(0.70 0.22 25);  border-color: oklch(0.62 0.25 25 / 0.35);  }
+.badge-queued   { background: oklch(0.80 0.17 90 / 0.15);  color: oklch(0.75 0.18 85);  border-color: oklch(0.80 0.17 90 / 0.35);  }
+.badge-idle     { background: oklch(0.25 0.02 264 / 0.50);  color: oklch(0.60 0.02 264); border-color: oklch(0.35 0.02 264 / 0.40);  }

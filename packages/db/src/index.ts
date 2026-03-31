@@ -30,3 +30,22 @@ export {
   formatEmbeddedPostgresError,
 } from "./embedded-postgres-error.js";
 export * from "./schema/index.js";
+export {
+  makeBypassRls,
+  makeRlsPolicy,
+  companyScope,
+  agentSelfScope,
+  companyAndCond,
+  companyInScope,
+  assertCompanyScope,
+  withRlsAudit,
+  isScopedPolicy,
+  getPolicyCompanyId,
+  RlsViolationError,
+  type BypassRls,
+  type RlsContext,
+  type RlsPolicy,
+  type CompanyScopedTable,
+  type RlsAuditEntry,
+  type RlsAuditLogger,
+} from "./rls.js";

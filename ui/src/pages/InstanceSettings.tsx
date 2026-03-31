@@ -34,7 +34,7 @@ export function InstanceSettings() {
   useEffect(() => {
     setBreadcrumbs([
       { label: "Instance Settings" },
-      { label: "Heartbeats" },
+      { label: "Pulses" },
     ]);
   }, [setBreadcrumbs]);
 

@@ -121,7 +121,7 @@ export function BudgetPolicyCard({
       <div>
         {summary.scopeType === "project"
           ? "Execution is paused for this project until the budget is raised or the incident is dismissed."
-          : "Heartbeats are paused for this scope until the budget is raised or the incident is dismissed."}
+          : "Pulses are paused for this scope until the budget is raised or the incident is dismissed."}
       </div>
     </div>
   ) : null;

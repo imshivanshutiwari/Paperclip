@@ -51,3 +51,18 @@ export {
   redactTranscriptEntryPaths,
 } from "./log-redaction.js";
 export { inferOpenAiCompatibleBiller } from "./billing.js";
+export {
+  DEFAULT_RAS_POLICY,
+  MINIMAL_RAS_POLICY,
+  DEEP_HISTORY_RAS_POLICY,
+  assembleRasContext,
+  resolveRunSummarizationLevel,
+  shouldTriggerLevel3Collapse,
+  estimateTokens,
+  parseRasPolicy,
+  type RecursiveAbstractiveSummarizationPolicy,
+  type SummarizationLevel,
+  type SummarizationTier,
+  type SummarizationUnit,
+  type RasContextPayload,
+} from "./recursive-abstractive-summarization.js";
