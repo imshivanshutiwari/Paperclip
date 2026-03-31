@@ -29,6 +29,7 @@ import { loadConfig } from "./config.js";
 import { logger } from "./middleware/logger.js";
 import { setupLiveEventsWebSocketServer } from "./realtime/live-events-ws.js";
 import { heartbeatService, reconcilePersistedRuntimeServicesOnStartup, routineService } from "./services/index.js";
+import { nexusPulseScheduler, PULSE_PRIORITIES } from "./services/nexus-pulse-scheduler.js";
 import { createStorageServiceFromConfig } from "./storage/index.js";
 import { printStartupBanner } from "./startup-banner.js";
 import { getBoardClaimWarningUrl, initializeBoardClaimChallenge } from "./board-claim.js";
@@ -575,36 +576,54 @@ export async function startServer(): Promise<StartedServer> {
         logger.error({ err }, "startup heartbeat recovery failed");
       });
     setInterval(() => {
-      void heartbeat
-        .tickTimers(new Date())
-        .then((result) => {
-          if (result.enqueued > 0) {
-            logger.info({ ...result }, "heartbeat timer tick enqueued runs");
-          }
-        })
-        .catch((err) => {
-          logger.error({ err }, "heartbeat timer tick failed");
-        });
+      nexusPulseScheduler.enqueue({
+        key: "heartbeat:tick-timers",
+        priority: PULSE_PRIORITIES.ROUTINE,
+        enqueuedAt: Date.now(),
+        execute: () =>
+          heartbeat
+            .tickTimers(new Date())
+            .then((result) => {
+              if (result.enqueued > 0) {
+                logger.info({ ...result }, "heartbeat timer tick enqueued runs");
+              }
+            })
+            .catch((err) => {
+              logger.error({ err }, "heartbeat timer tick failed");
+            }),
+      });
 
-      void routines
-        .tickScheduledTriggers(new Date())
-        .then((result) => {
-          if (result.triggered > 0) {
-            logger.info({ ...result }, "routine scheduler tick enqueued runs");
-          }
-        })
-        .catch((err) => {
-          logger.error({ err }, "routine scheduler tick failed");
-        });
-  
+      nexusPulseScheduler.enqueue({
+        key: "routines:tick-triggers",
+        priority: PULSE_PRIORITIES.ROUTINE,
+        enqueuedAt: Date.now(),
+        execute: () =>
+          routines
+            .tickScheduledTriggers(new Date())
+            .then((result) => {
+              if (result.triggered > 0) {
+                logger.info({ ...result }, "routine scheduler tick enqueued runs");
+              }
+            })
+            .catch((err) => {
+              logger.error({ err }, "routine scheduler tick failed");
+            }),
+      });
+
       // Periodically reap orphaned runs (5-min staleness threshold) and make sure
       // persisted queued work is still being driven forward.
-      void heartbeat
-        .reapOrphanedRuns({ staleThresholdMs: 5 * 60 * 1000 })
-        .then(() => heartbeat.resumeQueuedRuns())
-        .catch((err) => {
-          logger.error({ err }, "periodic heartbeat recovery failed");
-        });
+      nexusPulseScheduler.enqueue({
+        key: "heartbeat:orphan-reap",
+        priority: PULSE_PRIORITIES.CLEANUP,
+        enqueuedAt: Date.now(),
+        execute: () =>
+          heartbeat
+            .reapOrphanedRuns({ staleThresholdMs: 5 * 60 * 1000 })
+            .then(() => heartbeat.resumeQueuedRuns())
+            .catch((err) => {
+              logger.error({ err }, "periodic heartbeat recovery failed");
+            }),
+      });
     }, config.heartbeatSchedulerIntervalMs);
   }
   

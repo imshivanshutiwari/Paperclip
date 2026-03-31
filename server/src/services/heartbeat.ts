@@ -59,6 +59,7 @@ import {
   resolveSessionCompactionPolicy,
   type SessionCompactionPolicy,
 } from "@paperclipai/adapter-utils";
+import { nexusOrphanRecovery } from "./nexus-orphan-recovery.js";
 
 const MAX_LIVE_LOG_CHUNK_BYTES = 8 * 1024;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_DEFAULT = 1;
@@ -1933,6 +1934,21 @@ export function heartbeatService(db: Db) {
       await finalizeAgentStatus(run.agentId, "failed");
       await startNextQueuedRunForAgent(run.agentId);
       runningProcesses.delete(run.id);
+
+      // Record the orphan event for health-score tracking and escalation.
+      const runDurationMs = run.startedAt
+        ? now.getTime() - new Date(run.startedAt).getTime()
+        : null;
+      nexusOrphanRecovery.recordOrphan({
+        runId: run.id,
+        agentId: run.agentId,
+        companyId: run.companyId,
+        cause: run.processPid ? "process_lost" : "process_detached",
+        recoveryAction: retriedRun ? "retry_enqueued" : (shouldRetry ? "escalated" : "failed_terminal"),
+        recoveryRunId: retriedRun?.id ?? null,
+        runDurationMs,
+      });
+
       reaped.push(run.id);
     }
 
@@ -2079,6 +2095,7 @@ export function heartbeatService(db: Db) {
     }
 
     const runtime = await ensureRuntimeState(agent);
+    nexusOrphanRecovery.recordRunStart(agent.id);
     const context = parseObject(run.contextSnapshot);
     const taskKey = deriveTaskKeyWithHeartbeatFallback(context, null);
     const sessionCodec = getAdapterSessionCodec(agent.adapterType);
@@ -2857,6 +2874,9 @@ export function heartbeatService(db: Db) {
         }
       }
       await finalizeAgentStatus(agent.id, outcome);
+      if (outcome === "succeeded") {
+        nexusOrphanRecovery.markAgentHealthy(agent.id);
+      }
     } catch (err) {
       const message = redactCurrentUserText(
         err instanceof Error ? err.message : "Unknown adapter failure",
