@@ -43,6 +43,7 @@ import { BoardClaimPage } from "./pages/BoardClaim";
 import { CliAuthPage } from "./pages/CliAuth";
 import { InviteLandingPage } from "./pages/InviteLanding";
 import { NotFoundPage } from "./pages/NotFound";
+import { SystemHealth } from "./pages/SystemHealth";
 import { queryKeys } from "./lib/queryKeys";
 import { useCompany } from "./context/CompanyContext";
 import { useDialog } from "./context/DialogContext";
@@ -321,6 +322,7 @@ export function App() {
             <Route path="experimental" element={<InstanceExperimentalSettings />} />
             <Route path="plugins" element={<PluginManager />} />
             <Route path="plugins/:pluginId" element={<PluginSettings />} />
+            <Route path="health" element={<SystemHealth />} />
           </Route>
           <Route path="companies" element={<UnprefixedBoardRedirect />} />
           <Route path="issues" element={<UnprefixedBoardRedirect />} />

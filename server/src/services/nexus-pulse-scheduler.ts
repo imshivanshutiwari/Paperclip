@@ -276,6 +276,17 @@ export class NexusPulseScheduler {
     }
   }
 
+  /** Returns a snapshot of all active circuit breaker states for diagnostics. */
+  getCircuitBreakerSnapshot(): Array<{ key: string; failures: number; openUntil: number; backoffRemainingMs: number }> {
+    const now = Date.now();
+    return [...this.circuitBreakers.entries()].map(([key, state]) => ({
+      key,
+      failures: state.failures,
+      openUntil: state.openUntil,
+      backoffRemainingMs: Math.max(0, state.openUntil - now),
+    }));
+  }
+
   // ---------------------------------------------------------------------------
   // Internal drain loop
   // ---------------------------------------------------------------------------
@@ -393,13 +404,11 @@ export interface PulseSchedulerHealthReport {
 
 export function getNexusPulseSchedulerHealth(): PulseSchedulerHealthReport {
   const stats = nexusPulseScheduler.getStats();
-  // We intentionally expose minimal circuit-breaker info (keys only, no payload)
-  // Use scheduler internals indirectly via stats
   return {
     queueDepth: stats.currentQueueDepth,
     activeCount: stats.activeCount,
     stats,
-    circuitBreakers: [], // populated if needed via dependency injection
+    circuitBreakers: nexusPulseScheduler.getCircuitBreakerSnapshot(),
   };
 }
 

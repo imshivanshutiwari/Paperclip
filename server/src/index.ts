@@ -28,8 +28,9 @@ import { createApp } from "./app.js";
 import { loadConfig } from "./config.js";
 import { logger } from "./middleware/logger.js";
 import { setupLiveEventsWebSocketServer } from "./realtime/live-events-ws.js";
-import { heartbeatService, reconcilePersistedRuntimeServicesOnStartup, routineService } from "./services/index.js";
+import { agentService, heartbeatService, reconcilePersistedRuntimeServicesOnStartup, routineService } from "./services/index.js";
 import { nexusPulseScheduler, PULSE_PRIORITIES } from "./services/nexus-pulse-scheduler.js";
+import { nexusOrphanRecovery } from "./services/nexus-orphan-recovery.js";
 import { createStorageServiceFromConfig } from "./storage/index.js";
 import { printStartupBanner } from "./startup-banner.js";
 import { getBoardClaimWarningUrl, initializeBoardClaimChallenge } from "./board-claim.js";
@@ -566,6 +567,28 @@ export async function startServer(): Promise<StartedServer> {
   if (config.heartbeatSchedulerEnabled) {
     const heartbeat = heartbeatService(db as any);
     const routines = routineService(db as any);
+    const agents = agentService(db as any);
+
+    // Wire orphan-recovery escalation callbacks now that the agent service is available.
+    nexusOrphanRecovery.configure({
+      onEscalation: (record) => {
+        logger.warn(
+          { agentId: record.agentId, level: record.level, reason: record.reason },
+          "nexus orphan recovery: agent escalated",
+        );
+        if (record.level === "suspended") {
+          agents.pause(record.agentId, "system").catch((err: unknown) => {
+            logger.error({ err, agentId: record.agentId }, "nexus orphan recovery: failed to auto-pause agent");
+          });
+        }
+      },
+      onEscalationResolved: (agentId, previousLevel) => {
+        logger.info(
+          { agentId, previousLevel },
+          "nexus orphan recovery: agent escalation auto-resolved",
+        );
+      },
+    });
   
     // Reap orphaned running runs at startup while in-memory execution state is empty,
     // then resume any persisted queued runs that were waiting on the previous process.
@@ -735,25 +758,30 @@ export async function startServer(): Promise<StartedServer> {
     });
   });
   
-  if (embeddedPostgres && embeddedPostgresStartedByThisProcess) {
-    const shutdown = async (signal: "SIGINT" | "SIGTERM") => {
+  const shutdown = async (signal: "SIGINT" | "SIGTERM") => {
+    logger.info({ signal }, "Graceful shutdown initiated");
+
+    // Stop the pulse scheduler aging timer so no new tasks are picked up
+    nexusPulseScheduler.shutdown();
+
+    if (embeddedPostgres && embeddedPostgresStartedByThisProcess) {
       logger.info({ signal }, "Stopping embedded PostgreSQL");
       try {
         await embeddedPostgres?.stop();
       } catch (err) {
         logger.error({ err }, "Failed to stop embedded PostgreSQL cleanly");
-      } finally {
-        process.exit(0);
       }
-    };
-  
-    process.once("SIGINT", () => {
-      void shutdown("SIGINT");
-    });
-    process.once("SIGTERM", () => {
-      void shutdown("SIGTERM");
-    });
-  }
+    }
+
+    process.exit(0);
+  };
+
+  process.once("SIGINT", () => {
+    void shutdown("SIGINT");
+  });
+  process.once("SIGTERM", () => {
+    void shutdown("SIGTERM");
+  });
 
   return {
     server,

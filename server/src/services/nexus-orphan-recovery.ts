@@ -210,16 +210,35 @@ export class NexusOrphanRecovery {
   private readonly runCounter: AgentRunCounter;
   private readonly escalations: EscalationManager;
   private readonly healthWindowMs: number;
+  private onEscalationHook: (record: EscalationRecord) => void = noop;
+  private onEscalationResolvedHook: (agentId: string, previousLevel: EscalationLevel) => void = noop;
 
   constructor(options: NexusOrphanRecoveryOptions = {}) {
     this.healthWindowMs = options.healthWindowMs ?? HEALTH_SCORE_WINDOW_MS;
     this.store = new RollingOrphanStore();
     this.runCounter = new AgentRunCounter();
 
+    this.onEscalationHook = options.onEscalation ?? noop;
+    this.onEscalationResolvedHook = options.onEscalationResolved ?? noop;
+
     this.escalations = new EscalationManager(
-      options.onEscalation ?? noop,
-      options.onEscalationResolved ?? noop,
+      (record) => this.onEscalationHook(record),
+      (agentId, prev) => this.onEscalationResolvedHook(agentId, prev),
     );
+  }
+
+  /**
+   * Bind real escalation callbacks after construction. Intended for the
+   * server startup path where `db`/services are available after the singleton
+   * is first created. Calling this replaces any callbacks set in the constructor.
+   */
+  configure(options: Pick<NexusOrphanRecoveryOptions, "onEscalation" | "onEscalationResolved">): void {
+    if (options.onEscalation) {
+      this.onEscalationHook = options.onEscalation;
+    }
+    if (options.onEscalationResolved) {
+      this.onEscalationResolvedHook = options.onEscalationResolved;
+    }
   }
 
   /**

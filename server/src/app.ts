@@ -28,6 +28,7 @@ import { instanceSettingsRoutes } from "./routes/instance-settings.js";
 import { llmRoutes } from "./routes/llms.js";
 import { assetRoutes } from "./routes/assets.js";
 import { accessRoutes } from "./routes/access.js";
+import { nexusHealthRoutes } from "./routes/nexus-health.js";
 import { pluginRoutes } from "./routes/plugins.js";
 import { pluginUiStaticRoutes } from "./routes/plugin-ui-static.js";
 import { applyUiBranding } from "./ui-branding.js";
@@ -139,6 +140,7 @@ export async function createApp(
       companyDeletionEnabled: opts.companyDeletionEnabled,
     }),
   );
+  api.use("/health/nexus", nexusHealthRoutes());
   api.use("/companies", companyRoutes(db, opts.storageService));
   api.use(companySkillRoutes(db));
   api.use(agentRoutes(db));
