@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Clock3, FlaskConical, Puzzle, Settings, SlidersHorizontal } from "lucide-react";
+import { Activity, Clock3, FlaskConical, Puzzle, Settings, SlidersHorizontal } from "lucide-react";
 import { NavLink } from "@/lib/router";
 import { pluginsApi } from "@/api/plugins";
 import { queryKeys } from "@/lib/queryKeys";
@@ -46,6 +46,7 @@ export function InstanceSidebar() {
               ))}
             </div>
           ) : null}
+          <SidebarNavItem to="/instance/settings/health" label="System Health" icon={Activity} end />
         </div>
       </nav>
     </aside>

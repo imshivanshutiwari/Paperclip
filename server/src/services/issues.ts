@@ -20,7 +20,9 @@ import {
   labels,
   projectWorkspaces,
   projects,
+  assertCompanyScope,
 } from "@paperclipai/db";
+import type { RlsPolicy } from "@paperclipai/db";
 import { extractAgentMentionIds, extractProjectMentionIds } from "@paperclipai/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
 import {
@@ -787,6 +789,18 @@ export function issueService(db: Db) {
           lastExternalCommentAt: statsByIssueId.get(row.id)?.lastExternalCommentAt ?? null,
         }),
       }));
+    },
+
+    /**
+     * RLS-scoped variant of `list`. Validates the caller's policy against
+     * `companyId` before running the query, preventing cross-tenant data access.
+     */
+    listScoped: async (policy: RlsPolicy, companyId: string, filters?: IssueFilters) => {
+      assertCompanyScope(policy, companyId, "issueService.listScoped");
+      // For bypass policies, companyScope returns undefined — the list method
+      // already constrains by companyId so we can delegate directly.
+      const svc = issueService(db);
+      return svc.list(companyId, filters);
     },
 
     countUnreadTouchedByUser: async (companyId: string, userId: string, status?: string) => {

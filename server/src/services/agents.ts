@@ -12,6 +12,7 @@ import {
   heartbeatRunEvents,
   heartbeatRuns,
 } from "@paperclipai/db";
+import { companyScope, assertCompanyScope, type RlsPolicy } from "@paperclipai/db";
 import { isUuidLike, normalizeAgentUrlKey } from "@paperclipai/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
 import { normalizeAgentPermissions } from "./agent-permissions.js";
@@ -371,6 +372,26 @@ export function agentService(db: Db) {
   return {
     list: async (companyId: string, options?: { includeTerminated?: boolean }) => {
       const conditions = [eq(agents.companyId, companyId)];
+      if (!options?.includeTerminated) {
+        conditions.push(ne(agents.status, "terminated"));
+      }
+      const rows = await db.select().from(agents).where(and(...conditions));
+      const hydrated = await hydrateAgentSpend(rows);
+      return hydrated.map(normalizeAgentRow);
+    },
+
+    /**
+     * RLS-scoped variant of `list`. Validates that the caller's policy
+     * matches `companyId` before executing the query.
+     */
+    listScoped: async (
+      policy: RlsPolicy,
+      companyId: string,
+      options?: { includeTerminated?: boolean },
+    ) => {
+      assertCompanyScope(policy, companyId, "agentService.listScoped");
+      const scopeCond = companyScope(policy, agents.companyId);
+      const conditions = scopeCond ? [scopeCond] : [eq(agents.companyId, companyId)];
       if (!options?.includeTerminated) {
         conditions.push(ne(agents.status, "terminated"));
       }

@@ -963,3 +963,72 @@ a.paperclip-project-mention-chip {
 .badge-failed   { background: oklch(0.62 0.25 25 / 0.15);  color: oklch(0.70 0.22 25);  border-color: oklch(0.62 0.25 25 / 0.35);  }
 .badge-queued   { background: oklch(0.80 0.17 90 / 0.15);  color: oklch(0.75 0.18 85);  border-color: oklch(0.80 0.17 90 / 0.35);  }
 .badge-idle     { background: oklch(0.25 0.02 264 / 0.50);  color: oklch(0.60 0.02 264); border-color: oklch(0.35 0.02 264 / 0.40);  }
+
+/* ---------------------------------------------------------------------------
+ * Glassmorphism utility classes
+ * Use .glass-card for content cards, .glass-panel for data-table containers,
+ * .glass-sidebar for persistent side panels, .glass-popover for overlays.
+ * All variants pick up the --glass-* tokens so the theme can be adjusted
+ * globally by changing those CSS variables in the :root/.dark overrides above.
+ * --------------------------------------------------------------------------- */
+
+.glass-card {
+  background: var(--glass-bg, oklch(0.14 0.018 264 / 0.75));
+  border: 1px solid var(--glass-border, oklch(0.45 0.04 264 / 0.25));
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  box-shadow:
+    0 0 0 1px var(--glass-highlight, oklch(0.90 0.02 264 / 0.07)) inset,
+    0 4px 24px oklch(0.05 0.01 264 / 0.35);
+}
+
+.glass-panel {
+  background: var(--glass-bg, oklch(0.14 0.018 264 / 0.75));
+  border: 1px solid var(--glass-border, oklch(0.45 0.04 264 / 0.25));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.glass-sidebar {
+  background: oklch(0.10 0.014 264 / 0.85);
+  border-right: 1px solid var(--glass-border, oklch(0.45 0.04 264 / 0.25));
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+}
+
+.glass-popover {
+  background: oklch(0.12 0.016 264 / 0.92);
+  border: 1px solid var(--glass-border, oklch(0.45 0.04 264 / 0.25));
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  box-shadow:
+    0 0 0 1px var(--glass-highlight, oklch(0.90 0.02 264 / 0.07)) inset,
+    0 8px 32px oklch(0.05 0.01 264 / 0.55);
+}
+
+/* Light-mode glass: use a translucent white tint */
+:root:not(.dark) .glass-card,
+:root:not(.dark) .glass-panel,
+:root:not(.dark) .glass-sidebar,
+:root:not(.dark) .glass-popover {
+  background: oklch(1 0 0 / 0.72);
+  border-color: oklch(0.85 0 0 / 0.35);
+  box-shadow:
+    0 0 0 1px oklch(1 0 0 / 0.5) inset,
+    0 4px 24px oklch(0.70 0 0 / 0.12);
+}
+
+/* Neon glow variants – optional, attach to glass elements for extra flair */
+.glass-glow-primary {
+  box-shadow:
+    0 0 0 1px var(--glass-highlight, oklch(0.90 0.02 264 / 0.07)) inset,
+    0 4px 24px oklch(0.05 0.01 264 / 0.35),
+    0 0 16px var(--neon-glow-primary, oklch(0.72 0.195 264 / 0.20));
+}
+
+.glass-glow-secondary {
+  box-shadow:
+    0 0 0 1px var(--glass-highlight, oklch(0.90 0.02 264 / 0.07)) inset,
+    0 4px 24px oklch(0.05 0.01 264 / 0.35),
+    0 0 16px var(--neon-glow-secondary, oklch(0.75 0.18 160 / 0.20));
+}
